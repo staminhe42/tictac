@@ -68,23 +68,29 @@ const mailCallback = (req, res) => (error, results) => {
       throw error;
     }
     else {
-      console.log('Return of my Array:', results.rows);
-      var myId = results.rows[0].id_user;
-      var myMail = results.rows[0].email;
-      var myDate = results.rows[0].date;
-      var myNb = results.rows[0].nb_word;
-      if (req.body.email === myMail) { // test sur donnee en dur et non pas sur donnees de la bdd
+      var myMail = 'init';
+      if (results.rows[0])
+          var myMail = results.rows[0].email;
+      if (req.body.email == myMail) { // test sur donnee en dur et non pas sur donnees de la bdd
       const myToken = jwt.sign({
         iss: '',
         user: '',
         scope: 'user'
       }, secret);
+      var myId = results.rows[0].id_user;
+      var myDate = results.rows[0].date;
+      var myNb = results.rows[0].nb_word;
       res.json({
         token: myToken,
         message: 'Successfully logged user',
         success: true,
       });
     } else {
+        res.json({
+        mail : req.body.email,
+        message: 'email inexistant',
+        success: false,
+        });
         res.sendStatus(401);
       }
   }
