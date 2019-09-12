@@ -1,0 +1,37 @@
+#la creation de la base donnees#
+##################################
+
+#acces a la database postgres
+psql postgres
+
+
+# creer la database
+create database base_tictac;
+
+#connexion a la base
+\connect base_tictac root
+
+# creation du role
+CREATE ROLE root WITH LOGIN PASSWORD 'root';
+
+ALTER DATABASE base_tictac OWNER TO root;
+
+#creation de la table
+CREATE TABLE IF NOT EXISTS table_tictac 
+ ( 
+ id_user INT PRIMARY KEY NOT NULL,
+ email VARCHAR(50) UNIQUE NOT NULL,
+ date DATE,
+ nb_word INT 
+ );
+ 
+ #insert dans la table 
+INSERT INTO table_tictac (id_user, email)  
+VALUES (1,'sophie_taminh@yahoo.fr'),
+(2,'staminh@gmail.com'),
+(3,'staminh@valactive.com');
+
+	
+
+#avant de lancer le serveur, il faut lancer postgreSQL
+# pg_ctl start	

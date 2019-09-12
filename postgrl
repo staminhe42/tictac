@@ -1,0 +1,24 @@
+	
+
+#avant de lancer le serveur, il faut lancer postgreSQL
+# pg_ctl start	
+
+
+#pour acceder a ma base
+\connect base_tictac root
+
+#pour connaitre les cmd postgrl
+\h
+
+
+# liste des databases
+\l
+
+# liste des tables de la database courante
+\dt
+
+# description de la table
+\d nom_table
+
+# pour sortir de ma base
+\q

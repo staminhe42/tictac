@@ -4,6 +4,29 @@ const jwt = require('jsonwebtoken');
 const secret = 'qsdjS12ozehdoIJ123lfjlkdgjasdg221sfdg2113asdgf313fadf3ghduihqsDAqsdq';
 
 
+const endPromise = text => text;
+
+const myPromise = new Promise((resolve, reject) => {
+  setTimeout(_ => {
+    resolve(endPromise("Fin de notre promesse."));
+  }, 3000);
+})
+
+const myFunc = async data => {
+  try {
+    const value = await myPromise;    
+  } catch (e) {
+    // the error.
+  }
+  console.log(value);
+  console.log("J'ai fini.");
+};
+
+myFunc();
+
+
+
+
 let http = require('http').Server(app);
 let urlencodedParser = bodyParser.urlencoded({ extended: false });
 app.use(bodyParser.json({ limit: '10mb', extended: true }));
@@ -58,22 +81,93 @@ pool.connect(function (err){
 })
 
 
-// function notre_funct(req, res) {
-// return function notre_sous_funct(error, results) {
-      // On fait ce dont on a besoin MAIS avec req & res.
-//  }
-// }
-const mailCallback = (req, res) => (error, results) => {
+
+/*selection des mails */
+function getMail(var_mail){
+  console.log('-----deb fn getMail----');
+  console.log('var_mail envoye en param : ' +var_mail);
+
+ let return_query =  3;
+ return_query = client.query(var_mail);
+
+ console.log(return_query);
+ console.log('return_query : ' );
+ console.log(return_query);
+ console.log('-----fin fn getMail----');
+ return(return_query);
+
+client.query('SELECT * FROM table_tictac WHERE email = $1',[var_mail],(error, results) => {
     if (error) {
       throw error;
     }
     else {
-      console.log('Return of my Array:', results.rows);
-      var myId = results.rows[0].id_user;
-      var myMail = results.rows[0].email;
-      var myDate = results.rows[0].date;
-      var myNb = results.rows[0].nb_word;
-      if (req.body.email === myMail) { // test sur donnee en dur et non pas sur donnees de la bdd
+      console.log('select ok');
+      console.log(results.rows);
+      console.log(results.rows[0].id_user);
+      return_query = results.rows[0].id_user;
+      client.end();
+      return(return_query);
+    }
+    client.query(var_mail)
+        .then(results => {
+            const rows = results.rows;
+            rows.map(row => {
+                console.log(`Read: ${JSON.stringify(row)}`);
+            });
+            process.exit();
+        })
+  });
+
+
+
+}
+
+   
+
+
+ 
+
+
+
+/*function getMail(var_mail){
+    const text = 'SELECT * FROM table_tictac WHERE email = $1'
+    const value = [var_mail];
+
+    client
+        .query(text,value)
+        .then(res => {
+            const rows = res.rows;
+            rows.map(row => {
+                console.log(`Read: ${JSON.stringify(row)}`);
+            });
+            process.exit();
+        })
+        .catch(err => {
+            console.log(err);
+        });
+}*/
+
+
+
+/* il faut acceder a la bdd sur l'email */
+/* voir la difference de porte de var et let */
+let user = {email: 'sophie_taminh@yahoo.fr'}
+var var_mail = '  ';
+
+
+/* se log et recuperer un token */
+app.post('/api/token', urlencodedParser, (req, res) => {
+  console.log('--------debut app.post api token-----------------');
+  if (!req.body) {
+    res.sendStatus(500);
+  } else {
+    var var_mail = req.body.email
+    console.log('mail envoye par post : ' + var_mail);
+    var arr =[];
+    arr = getMail(var_mail);
+    console.log(arr);
+    /*console.log(results.rows);*/
+    if (req.body.email === user.email) { // test sur donnee en dur et non pas sur donnees de la bdd
       const myToken = jwt.sign({
         iss: '',
         user: '',
@@ -85,25 +179,8 @@ const mailCallback = (req, res) => (error, results) => {
         success: true,
       });
     } else {
-        res.sendStatus(401);
-      }
-  }
-};
-
-/*selection des mails */
-function getMail(req, res, var_mail){
- client.query('SELECT * FROM table_tictac WHERE email = $1',[var_mail], mailCallback(req, res));
-}
-
-/* se log et recuperer un token */
-app.post('/api/token', urlencodedParser, (req, res) => {
-  console.log('--------debut app.post api token-----------------');
-  if (!req.body) {
-    res.sendStatus(500);
-  } else {
-    var var_mail = req.body.email
-    console.log('mail envoye par post : ' + var_mail);
-    getMail(req, res, var_mail);
+      res.sendStatus(401);
+    }
   }
 });
 
